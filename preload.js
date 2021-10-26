@@ -10,6 +10,7 @@ let config = {
 };
 
 function beginTravel() {
+	let ivl;
 	let allow = [ "pick", "salvage", "attack", "chop", "catch", "mine" ];
 	let button = document.querySelector("#primaryStepButton");
 	let travelCooldown = document.querySelector("#travelBarContainer");
@@ -27,6 +28,7 @@ function beginTravel() {
 	function tryStep() {
 		if (document.querySelector("a[href=\"/i-am-not-a-bot\"]")) {
 			window.location.pathname = "/i-am-not-a-bot";
+			clearInterval(ivl);
 			return;
 		}
 
@@ -68,7 +70,7 @@ function beginTravel() {
 	}
 	
 	tryStep();
-	setInterval(tryStep, 2040);
+	ivl = setInterval(tryStep, 540);
 }
 
 function beginGather() {
@@ -87,7 +89,7 @@ function beginGather() {
 		}
 	}
 
-	setInterval(doGather, 1750);
+	setInterval(doGather, 350);
 }
 
 function beginAttack() {
@@ -104,7 +106,7 @@ function beginAttack() {
 		attackButton.click();
 	}
 
-	setInterval(tryAttack, 1750);
+	setInterval(tryAttack, 350);
 }
 
 function beginHumanVerif() {
@@ -125,21 +127,23 @@ function beginHumanVerif() {
 	let b64 = [];
 
 	for (let img of images) {
-		let i = b64.length;
 		b64.push(getBase64Image(img));
-
-		img.parentElement.addEventListener("click", () => {
-			ipcRenderer.send("verification-info", finding, b64, i);
-		});
 	}
 
 	let find = ipcRenderer.sendSync("find-verification", finding, b64);
 
 	if (find === -1) {
 		ipcRenderer.send("flash-window");
+		for (let i = 0; i < images.length; i++) {
+			images[i].parentElement.addEventListener("click", () => {
+				ipcRenderer.send("verification-info", finding, b64, i);
+			});
+		}
 	}
 	else {
-		console.log("found: ", finding, find)
+		console.log("found: ", finding, find);
+		images[find].click();
+
 	}
 
 	function detectEnd() {
@@ -158,7 +162,12 @@ endpoints["^/crafting/material/gather"] = beginGather;
 endpoints["^/npcs/attack"] = beginAttack;
 endpoints["^/i-am-not-a-bot"] = beginHumanVerif;
 
+let i = 0;
 window.addEventListener("load", () => {
+	if (i++ == 0) {
+		return; // rocket loader hack
+	}
+
 	for (let key in endpoints) {
 		if (window.location.pathname.match(new RegExp(key))) {
 			console.log(`Matched ${window.location.pathname} to ${key}`);
@@ -166,4 +175,5 @@ window.addEventListener("load", () => {
 			break;
 		}
 	}
+
 });

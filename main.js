@@ -1,6 +1,21 @@
-const { app, BrowserWindow, BrowserView, ipcMain } = require("electron");
+const { app, BrowserWindow, BrowserView, ipcMain, session } = require("electron");
 const { join } = require("path");
 const { watch, writeFile, readFile } = require("fs").promises;
+const Jimp = require("jimp");
+
+const similar = function(i0, i1) {
+	return new Promise(async (res, rej) => {
+		let a = await Jimp.read(Buffer.from(i0, "base64"));
+		let b = await Jimp.read(Buffer.from(i1, "base64"));
+
+		let dist = Jimp.distance(a, b);
+		let diff = Jimp.diff(a, b).percent;
+
+		console.log(dist, diff);
+
+		res(dist < 0.15 || diff < 0.15);
+	});
+}
 
 let config = {};
 let main, devtools, verification;
@@ -13,17 +28,20 @@ async function saveDatabase() {
 	writeFile("verification_db.json", JSON.stringify(verification, null, "\t"), "utf-8");
 }
 
-function findInDatabase(images, name) {
+async function findInDatabase(images, name) {
 	if (!verification[name]) {
-		return;
+		return -1;
 	}
+
 	for (let i = 0; i < images.length; i++) {
-		let image = images[i];
-		let found = verification[name].indexOf(image);
-		if (found !== -1) {
-			return i;
+		for (let compare of verification[name]) {
+			if (await similar(images[i], compare)) {
+				return i;
+			}
 		}
 	}
+
+	return -1;
 }
 
 function saveInDatabase(name, image) {
@@ -44,7 +62,7 @@ async function createGame() {
 	}
 	catch (e) {
 		console.error(e);
-		verification = Object.create(null);
+		verification = {};
 	}
 
 	saveDatabase();
@@ -88,6 +106,12 @@ async function createGame() {
 		},
 	});
 
+	
+	let gameSession = session.fromPartition("persist:simplemmo2x");
+	gameSession.setPermissionRequestHandler((webContents, permission, callback) => {
+		return callback(false);
+	});
+
 	ipcMain.on("config-get", (event, msg) => {
 		event.returnValue = config[msg];
 	});
@@ -106,16 +130,15 @@ async function createGame() {
 		main.flashFrame(true);
 	});
 
-	ipcMain.on("find-verification", (event, what, images) => {
-		event.returnValue = findInDatabase(images, what);
+	ipcMain.on("find-verification", async (event, what, images) => {
+		event.returnValue = await findInDatabase(images, what);
 	});
 
-	ipcMain.on("verification-info", (event, what, images, chosen) => {
-		if (findInDatabase(images, what)) {
-			console.log("FOUND PREVIOUS SAVE");
+	ipcMain.on("verification-info", async (event, what, images, chosen) => {
+		if (await findInDatabase(images, what) !== -1) {
+			console.log(`found similar: ${what}`);
 		}
 		else {
-			console.log(`saving ${images[chosen]} as ${what}`);
 			saveInDatabase(what, images[chosen]);
 		}
 	});
