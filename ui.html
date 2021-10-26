@@ -1,0 +1,55 @@
+<!doctype html>
+
+<html>
+	<head>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
+		<style>
+			body, html {
+				margin: 0;
+				padding: 0;
+				height: 100%;
+				background: white;
+				font-family: "Roboto", sans-serif;
+			}
+
+			#bar {
+				height: calc(100% - 4px);
+				background: black;
+				color: white;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="bar">
+			<span id="status">Starting</span>
+		</div>
+
+		<script type="text/javascript">
+			const { ipcRenderer } = require("electron");
+			let config = {
+				get: function(a) {
+					return ipcRenderer.sendSync("config-get", a);
+				},
+				set: function(a, b) {
+					ipcRenderer.sendSync("config-set", [a, b]);
+				}
+			};
+
+			let statusText = document.querySelector("#status");
+
+			statusText.textContent = "tr";
+
+			function updateBar() {
+				statusText.textContent = `Steps: ${config.get("steps") || 0}`;
+			}
+
+			ipcRenderer.on("config-update", updateBar);
+			updateBar();
+		</script>
+	</body>
+</html>

@@ -26,6 +26,7 @@ function beginTravel() {
 
 	function tryStep() {
 		if (document.querySelector("a[href=\"/i-am-not-a-bot\"]")) {
+			ipcRenderer.send("flash-window");
 			return;
 		}
 
@@ -63,6 +64,7 @@ function beginTravel() {
 		}
 
 		button.click();
+		config.set("steps", (config.get("steps") || 0) + 1);
 	}
 	
 	tryStep();
