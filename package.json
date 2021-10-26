@@ -1,0 +1,17 @@
+{
+	"name": "simplemmo2x",
+	"version": "1.0.0",
+	"description": "SimpleMMO Bot",
+	"main": "main.js",
+	"author": {
+		"email": "meepdarknessmeep@gmail.com",
+		"name": "Meepen"
+	},
+	"scripts": {
+		"start": "electron ."
+	},
+	"license": "MIT",
+	"devDependencies": {
+		"electron": "^15.3.0"
+	}
+}
