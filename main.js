@@ -59,7 +59,7 @@ const emittedOnce = (element, eventName) => new Promise(resolve => {
 	});
 
 	ipcMain.on("flash-window", () => {
-		window.flashFrame(true);
+		main.flashFrame(true);
 	});
 
 	main.addBrowserView(ui);
