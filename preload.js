@@ -26,7 +26,7 @@ function beginTravel() {
 
 	function tryStep() {
 		if (document.querySelector("a[href=\"/i-am-not-a-bot\"]")) {
-			ipcRenderer.send("flash-window");
+			window.location.pathname = "/i-am-not-a-bot";
 			return;
 		}
 
@@ -107,13 +107,58 @@ function beginAttack() {
 	setInterval(tryAttack, 1750);
 }
 
+function beginHumanVerif() {
+	function getBase64Image(img) {
+		var canvas = document.createElement("canvas");
+		canvas.width = img.width;
+		canvas.height = img.height;
+		var ctx = canvas.getContext("2d");
+		ctx.drawImage(img, 0, 0);
+		var dataURL = canvas.toDataURL("image/png");
+		return dataURL.replace(/^data:image\/(?:png|jpg);base64,/, "");
+	}
+
+	let finding = Array.from(document.querySelectorAll("span")).find(e => e.textContent.indexOf("Please press on the following") === 0).parentElement.children[1].textContent.trim();
+
+	let images = document.querySelectorAll("img[src^=\"/i-am-not-a-bot\"]");
+
+	let b64 = [];
+
+	for (let img of images) {
+		let i = b64.length;
+		b64.push(getBase64Image(img));
+
+		img.parentElement.addEventListener("click", () => {
+			ipcRenderer.send("verification-info", finding, b64, i);
+		});
+	}
+
+	let find = ipcRenderer.sendSync("find-verification", finding, b64);
+
+	if (find === -1) {
+		ipcRenderer.send("flash-window");
+	}
+	else {
+		console.log("found: ", finding, find)
+	}
+
+	function detectEnd() {
+		if (document.querySelector("div[class$=\"success-ring\"]")) {
+			window.history.back();
+		}
+	}
+
+	setInterval(detectEnd, 1000);
+}
+
 let endpoints = Object.create(null);
 
 endpoints["^/travel$"] = beginTravel;
 endpoints["^/crafting/material/gather"] = beginGather;
 endpoints["^/npcs/attack"] = beginAttack;
+endpoints["^/i-am-not-a-bot"] = beginHumanVerif;
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("load", () => {
 	for (let key in endpoints) {
 		if (window.location.pathname.match(new RegExp(key))) {
 			console.log(`Matched ${window.location.pathname} to ${key}`);
