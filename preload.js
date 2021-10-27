@@ -5,14 +5,14 @@ let config = {
 		return ipcRenderer.sendSync("config-get", a);
 	},
 	set: function(a, b) {
-		ipcRenderer.sendSync("config-set", [a, b]);
+		ipcRenderer.sendSync("config-set", a, b);
 	}
 };
 
 function pressDown(ele) {
 	let bounds = ele.getBoundingClientRect()
-	let px = bounds.left + Math.random() * (bounds.right - bounds.left);
-	let py = bounds.top + Math.random() * (bounds.bottom - bounds.top);
+	let px = bounds.left + Math.floor(Math.random() * (bounds.right - bounds.left));
+	let py = bounds.top + Math.floor(Math.random() * (bounds.bottom - bounds.top));
 	let opts = {
 		clientX: px,
 		clientY: py
@@ -29,7 +29,7 @@ function pressDown(ele) {
 
 function beginTravel() {
 	let ivl;
-	let allow = [ "pick", "salvage", "attack", "chop", "catch", "mine" ];
+	let disallow = [ "visit profile" ];
 	let button = document.querySelector("#primaryStepButton");
 	let travelCooldown = document.querySelector("#travelBarContainer");
 
@@ -49,21 +49,21 @@ function beginTravel() {
 			clearInterval(ivl);
 			return;
 		}
-
-		let interaction = document.querySelector(".travel-text a");
+		
+		let interaction = document.querySelector(".travel-text a.font-medium");
 
 		if (interaction) {
 			let interactionType = interaction.textContent.trim().toLowerCase();
 			ipcRenderer.send("note", interactionType);
 			let found = false;
-			for (let word of allow) {
+			for (let word of disallow) {
 				if (interactionType.indexOf(word) !== -1) {
 					found = true;
 					break;
 				}
 			}
 
-			if (found) {
+			if (!found) {
 				// check if able to do
 				let skill_check = Array.from(document.querySelector(".travel-text a").parentElement.querySelectorAll("small")).filter(n => n.textContent.indexOf("skill level") !== -1);
 				if (skill_check.length === 0) {

@@ -20,7 +20,11 @@
 				color: white;
 				display: flex;
 				align-items: center;
-				justify-content: center;
+				justify-content: left;
+			}
+
+			#bar > * {
+				padding-left: 5px;
 			}
 		</style>
 	</head>
@@ -36,7 +40,7 @@
 					return ipcRenderer.sendSync("config-get", a);
 				},
 				set: function(a, b) {
-					ipcRenderer.sendSync("config-set", [a, b]);
+					ipcRenderer.sendSync("config-set", a, b);
 				}
 			};
 
