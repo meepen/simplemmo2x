@@ -11,8 +11,6 @@ const similar = function(i0, i1) {
 		let dist = Jimp.distance(a, b);
 		let diff = Jimp.diff(a, b).percent;
 
-		console.log(dist, diff);
-
 		res(dist < 0.15 || diff < 0.15);
 	});
 }

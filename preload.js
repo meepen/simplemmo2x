@@ -9,6 +9,24 @@ let config = {
 	}
 };
 
+function pressDown(ele) {
+	let bounds = ele.getBoundingClientRect()
+	let px = bounds.left + Math.random() * (bounds.right - bounds.left);
+	let py = bounds.top + Math.random() * (bounds.bottom - bounds.top);
+	let opts = {
+		clientX: px,
+		clientY: py
+	}
+	ele.dispatchEvent(new MouseEvent("mousedown", opts));
+
+	return {
+		finish: function() {
+			ele.dispatchEvent(new MouseEvent("mouseup", opts));
+			ele.dispatchEvent(new MouseEvent("click", opts));
+		}
+	}
+}
+
 function beginTravel() {
 	let ivl;
 	let allow = [ "pick", "salvage", "attack", "chop", "catch", "mine" ];
@@ -50,7 +68,7 @@ function beginTravel() {
 				let skill_check = Array.from(document.querySelector(".travel-text a").parentElement.querySelectorAll("small")).filter(n => n.textContent.indexOf("skill level") !== -1);
 				if (skill_check.length === 0) {
 					// skill level is fine
-					interaction.click();
+					pressDown(interaction).finish();
 					return;
 				}
 			}
@@ -61,11 +79,10 @@ function beginTravel() {
 		}
 
 		if (travelCooldown.style[0] !== "display") {
-			console.log("cooldown");
 			return;
 		}
 
-		button.click();
+		pressDown(button).finish();
 		config.set("steps", (config.get("steps") || 0) + 1);
 	}
 	
@@ -76,15 +93,15 @@ function beginTravel() {
 function beginGather() {
 	let pushed = false;
 	let gatherAction = document.querySelector("#action_button");
+	let ev;
 
 	function doGather() {
 		if (!pushed) {
-			gatherAction.dispatchEvent(new MouseEvent("mousedown"));
-			gatherAction.click();
+			ev = pressDown(gatherAction);
 			pushed = true;
 		}
 		else if (!document.querySelector(".loading-bar")) {
-			gatherAction.dispatchEvent(new MouseEvent("mouseup"));
+			ev.finish();
 			pushed = false;
 		}
 	}
@@ -103,7 +120,7 @@ function beginAttack() {
 			}
 		}
 
-		attackButton.click();
+		pressDown(attackButton).finish();
 	}
 
 	setInterval(tryAttack, 350);
@@ -142,8 +159,7 @@ function beginHumanVerif() {
 	}
 	else {
 		console.log("found: ", finding, find);
-		images[find].click();
-
+		pressDown(images[find].parentElement).finish();
 	}
 
 	function detectEnd() {
