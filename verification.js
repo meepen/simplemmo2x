@@ -53,6 +53,6 @@ module.exports.Verification = class Verification {
 		}
 		this.db[name].push(image);
 	
-		await saveDatabase();
+		await this.saveDatabase();
 	}
 }
