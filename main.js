@@ -7,7 +7,7 @@ const height = 640;
 
 let verify = new Verification();
 let manager = new GameManager({
-	gameCount: 1
+	gameCount: 3
 });
 
 ipcMain.on("config-get", (event, key) => {
@@ -29,6 +29,10 @@ ipcMain.on("find-verification", async (event, what, images) => {
 
 ipcMain.on("verification-info", async (event, what, images, chosen) => {
 	await verify.saveInDatabase(what, images[chosen]);
+});
+
+ipcMain.on("next-game", () => {
+	manager.nextGame();
 });
 
 function createGame() {

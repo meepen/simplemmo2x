@@ -10,7 +10,7 @@
 				margin: 0;
 				padding: 0;
 				height: 100%;
-				background: white;
+				background: #322;
 				font-family: "Roboto", sans-serif;
 			}
 
@@ -30,6 +30,9 @@
 	</head>
 	<body>
 		<div id="bar">
+			<span>Active:&nbsp;</span>
+			<button id="gameid" onclick="switchGame()">none</button>
+
 			<span id="status">Starting</span>
 		</div>
 
@@ -45,14 +48,18 @@
 			};
 
 			let statusText = document.querySelector("#status");
-
-			statusText.textContent = "tr";
+			let gameId = document.querySelector("#gameid")
 
 			function updateBar() {
+				gameId.textContent = (config.get("game") || 0) + 1
 				statusText.textContent = `Steps: ${config.get("steps") || 0}`;
 			}
 
 			ipcRenderer.on("config-update", updateBar);
+
+			function switchGame() {
+				ipcRenderer.send("next-game");
+			}
 			updateBar();
 		</script>
 	</body>

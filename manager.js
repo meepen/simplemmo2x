@@ -4,11 +4,14 @@ const { Game } = require("./game");
 const { watch } = require("fs/promises");
 
 const ui_height = 32;
+const inactive_height = 350;
 
 module.exports.GameManager = class GameManager {
 	constructor(opts) {
 		this.games = [];
 		this.config = {};
+
+		this.activeGame = 0;
 
 		this.gameCount = opts.gameCount || 1;
 	}
@@ -30,6 +33,7 @@ module.exports.GameManager = class GameManager {
 			height,
 			show: false,
 			autoHideMenuBar: true,
+			backgroundColor: "#000"
 		});
 
 		this.mainWindow.on("close", () => {
@@ -57,7 +61,6 @@ module.exports.GameManager = class GameManager {
 		// for some reason must be called after adding all views
 		this.manageViews();
 
-
 		this.mainWindow.show();
 
 		this.startRefresh();
@@ -78,18 +81,42 @@ module.exports.GameManager = class GameManager {
 			height: false
 		});
 
-		for (let { view } of this.games) {
-			view.setBounds({
-				x: 0,
-				y: ui_height,
-				width: width,
-				height: height - ui_height
-			});
-			view.setAutoResize({
-				width: true,
-				height: true
-			});
+		let x = 0;
+		let w = width / (this.games.length - 1);
+
+		for (let { view, id } of this.games) {
+			if (id == this.activeGame) {
+				view.setBounds({
+					x: 0,
+					y: ui_height + inactive_height,
+					width: width,
+					height: height - ui_height - inactive_height
+				});
+				view.setAutoResize({
+					width: true,
+					height: true
+				});
+			}
+			else {
+				view.setBounds({
+					x,
+					y: ui_height,
+					height: inactive_height,
+					width: w
+				});
+				view.setAutoResize({
+					horizontal: true
+				});
+				x += w;
+			}
 		}
+	}
+
+	nextGame() {
+		this.activeGame = (this.activeGame + 1) % this.games.length;
+
+		this.manageViews();
+		this.setConfig("game", this.activeGame);
 	}
 
 	async createGame() {
