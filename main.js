@@ -1,13 +1,23 @@
 const { app, ipcMain } = require("electron");
+const yargs = require("yargs");
 const { GameManager } = require("./manager");
 const { Verification } = require("./verification");
+
+const argv = yargs
+	.command("accounts", "Determines how many sub-windows to create for multi-account", {
+		amount: {
+			alias: "a",
+			default: "1",
+			type: "number"
+		}
+	}).argv
 
 const width = 400;
 const height = 640;
 
 let verify = new Verification();
 let manager = new GameManager({
-	gameCount: 3
+	gameCount: argv.amount
 });
 
 ipcMain.on("config-get", (event, key) => {
