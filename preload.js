@@ -126,18 +126,27 @@ function beginAttack() {
 		pressDown(attackButton).finish();
 	}
 
-	setInterval(tryAttack, 350);
+	setInterval(tryAttack, 1350);
 }
 
-function beginHumanVerif() {
+async function beginHumanVerif() {
 	function getBase64Image(img) {
-		var canvas = document.createElement("canvas");
-		canvas.width = img.width;
-		canvas.height = img.height;
-		var ctx = canvas.getContext("2d");
-		ctx.drawImage(img, 0, 0);
-		var dataURL = canvas.toDataURL("image/png");
-		return dataURL.replace(/^data:image\/(?:png|jpg);base64,/, "");
+		return new Promise((res, rej) => {
+			let loader = new Image();
+			loader.onload = function() {
+				var canvas = document.createElement("canvas");
+				canvas.width = loader.width;
+				canvas.height = loader.height;
+				var ctx = canvas.getContext("2d");
+				ctx.drawImage(loader, 0, 0);
+				var dataURL = canvas.toDataURL("image/png");
+				res(dataURL.replace(/^data:image\/(?:png|jpg);base64,/, ""));
+			}
+
+			loader.src = img.src;
+
+			loader.onabort = rej;
+		});
 	}
 
 	let finding = Array.from(document.querySelectorAll("span")).find(e => e.textContent.indexOf("Please press on the following") === 0).parentElement.children[1].textContent.trim();
@@ -147,7 +156,7 @@ function beginHumanVerif() {
 	let b64 = [];
 
 	for (let img of images) {
-		b64.push(getBase64Image(img));
+		b64.push(await getBase64Image(img));
 	}
 
 	let find = ipcRenderer.sendSync("find-verification", finding, b64);

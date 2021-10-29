@@ -10,7 +10,7 @@ async function similar(i0, i1) {
 	let dist = Jimp.distance(a, b);
 	let diff = Jimp.diff(a, b).percent;
 
-	return dist < 0.15 || diff < 0.15;
+	return dist < 0.05 || diff < 0.05;
 }
 
 module.exports.Verification = class Verification {
