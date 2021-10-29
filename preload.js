@@ -30,6 +30,9 @@ function pressDown(ele) {
 function beginTravel() {
 	let ivl;
 	let disallow = [ "visit profile" ];
+	if (!config.get("attack")) {
+		disallow.push("attack");
+	}
 	let button = document.querySelector("#primaryStepButton");
 	let travelCooldown = document.querySelector("#travelBarContainer");
 

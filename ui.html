@@ -33,6 +33,8 @@
 			<span>Active:&nbsp;</span>
 			<button id="gameid" onclick="switchGame()">none</button>
 
+			<span>Auto-Attack:&nbsp;</span>
+			<input id="attackbtn" type="checkbox" checked="true" onchange="updateAttack()">
 			<span id="status">Starting</span>
 		</div>
 
@@ -48,11 +50,13 @@
 			};
 
 			let statusText = document.querySelector("#status");
-			let gameId = document.querySelector("#gameid")
+			let gameId = document.querySelector("#gameid");
+			let attack = document.querySelector("#attackbtn");
 
-			function updateBar() {
+			function updateBar(e, key, value) {
 				gameId.textContent = (config.get("game") || 0) + 1
 				statusText.textContent = `Steps: ${config.get("steps") || 0}`;
+				attack.checked = config.get("attack");
 			}
 
 			ipcRenderer.on("config-update", updateBar);
@@ -60,6 +64,11 @@
 			function switchGame() {
 				ipcRenderer.send("next-game");
 			}
+
+			function updateAttack() {
+				config.set("attack", attack.checked);
+			}
+
 			updateBar();
 		</script>
 	</body>

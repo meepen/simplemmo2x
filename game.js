@@ -5,8 +5,9 @@ const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0) Gecko/2010
 
 
 module.exports.Game = class Game {
-	constructor(id) {
+	constructor(id, group) {
 		this.id = id;
+		this.sessionGroup = group || "";
 	}
 
 	async createView() {
@@ -38,7 +39,7 @@ module.exports.Game = class Game {
 	}
 
 	createSession() {
-		let gameSession = session.fromPartition("persist:simplemmo2x" + (this.id ? this.id : ""));
+		let gameSession = session.fromPartition("persist:simplemmo2x" + this.sessionGroup + (this.id || ""));
 		gameSession.setPermissionRequestHandler((webContents, permission, callback) => {
 			return callback(false);
 		});

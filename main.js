@@ -4,11 +4,18 @@ const { GameManager } = require("./manager");
 const { Verification } = require("./verification");
 
 const argv = yargs
-	.command("accounts", "Determines how many sub-windows to create for multi-account", {
+	.command("amount", "Determines how many sub-windows to create for multi-account", {
 		amount: {
 			alias: "a",
 			default: "1",
 			type: "number"
+		}
+	})
+	.command("group", "Determines a group for the cookie storage", {
+		group: {
+			alias: "g",
+			default: "",
+			type: "string"
 		}
 	}).argv
 
@@ -17,7 +24,8 @@ const height = 640;
 
 let verify = new Verification();
 let manager = new GameManager({
-	gameCount: argv.amount
+	gameCount: argv.amount,
+	group: argv.group
 });
 
 ipcMain.on("config-get", (event, key) => {
