@@ -1,5 +1,6 @@
 const { writeFile, readFile } = require("fs/promises");
 const { readFileSync } = require("fs");
+const { watch } = require("fs/promises");
 
 const Jimp = require("jimp");
 
@@ -10,16 +11,32 @@ async function similar(i0, i1) {
 	let dist = Jimp.distance(a, b);
 	let diff = Jimp.diff(a, b).percent;
 
-	return dist < 0.05 || diff < 0.05;
+	return dist < 0.15 || diff < 0.15;
 }
 
 module.exports.Verification = class Verification {
 	constructor() {
+		this.dbFile = "verification_db.json";
+		this.readDB();
+		this.startRefresh();
+
+	}
+	
+	async startRefresh() {
+		let watcher = watch(this.dbFile);
+
+		for await (const event of watcher) {
+			this.readDB();
+		}
+	}
+
+	readDB() {
 		try {
-			this.db = JSON.parse(readFileSync("verification_db.json", "utf-8"));
+			console.log("reloaded db");
+			this.db = JSON.parse(readFileSync(this.dbFile, "utf-8"));
 		}
 		catch (e) {
-			console.warn("new database created");
+			console.error(e);
 			this.db = {};
 		}
 	}

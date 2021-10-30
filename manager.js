@@ -84,10 +84,8 @@ module.exports.GameManager = class GameManager {
 
 		let x = 0;
 		let w = Math.floor(width / (this.games.length - 1));
-		console.log(this.mainWindow.getBounds());
 
 		let inactiveHeight = this.games.length === 1 ? 0 : inactive_height;
-		console.log(width, height, inactiveHeight, w);
 
 		for (let { view, id } of this.games) {
 			if (id === this.activeGame) {
@@ -103,7 +101,6 @@ module.exports.GameManager = class GameManager {
 				});
 			}
 			else {
-				console.log(x, id, this.activeGame, typeof id, typeof this.activeGame);
 				view.setBounds({
 					x: x,
 					y: ui_height,
