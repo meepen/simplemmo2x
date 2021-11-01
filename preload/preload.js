@@ -5,6 +5,7 @@ const { AttackAction } = require("./actions/attack");
 const { InventoryAction } = require("./actions/inventory");
 const { QuestViewAction } = require("./actions/questview");
 const { QuestAction } = require("./actions/quest");
+const { storage } = require("./api");
 
 let endpoints = Object.create(null);
 
@@ -16,6 +17,25 @@ endpoints["^/inventory/items"] = InventoryAction
 endpoints["^/quests/viewall"] = QuestViewAction;
 endpoints["^/quests/view/"] = QuestAction;
 
+function checkTimers() {
+	let nextQuest = storage.get("nextQuest") || 0;
+	if (nextQuest <= Date.now()) {
+		location.pathname = "/quests/viewall";
+		storage.set("nextQuest", Date.now() + 60000 * 5 + Math.random() * 60000 * 10);
+		return true;
+	}
+
+	let nextInventory = storage.get("nextInventory") || 0;
+
+	if (nextInventory <= Date.now()) {
+		storage.set("nextInventory", Date.now() + 60000 * 15);
+		location.href = `${location.origin}/inventory/items?order_col=items.stat1modifier&order=desc&page=1`;
+		return true;
+	}
+
+	return false;
+}
+
 let i = 0;
 window.addEventListener("load", () => {
 	document.querySelector("html").classList.add("dark");
@@ -24,13 +44,20 @@ window.addEventListener("load", () => {
 		return; // rocket loader hack
 	}
 
+	if (location.pathname === "/travel" && checkTimers()) {
+		return;
+	}
+
 	for (let key in endpoints) {
 		if (window.location.pathname.match(new RegExp(key))) {
 			console.log(`Matched ${window.location.pathname} to ${key}`);
 
 			let c = new endpoints[key];
-			c.run().then(() => {
+			c.run().then(travel => {
 				console.log("action complete.");
+				if (travel) {
+					location.pathname = "/travel";
+				}
 			}).catch(e => {
 				console.error(e);
 			});

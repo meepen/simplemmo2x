@@ -8,7 +8,7 @@ module.exports.QuestViewAction = class QuestViewAction {
 	async run() {
 		if (this.questPoints === 0) {
 			console.log("no quest points to spend ;)");
-			return;
+			return true;
 		}
 
 		let quests = document.querySelectorAll("a[href^=\"/quests/view/\"]");

@@ -17,6 +17,7 @@
 	},
 	"dependencies": {
 		"jimp": "0.16.1",
-		"yargs": "17.2.1"
+		"yargs": "17.2.1",
+		"seeded-rand": "2.0.1"
 	}
 }

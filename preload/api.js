@@ -19,6 +19,15 @@ module.exports.config = {
 	}
 };
 
+module.exports.storage = {
+	get: function(a) {
+		return ipcRenderer.sendSync("config-get-local", a);
+	},
+	set: function(a, b) {
+		ipcRenderer.sendSync("config-set-local", a, b);
+	}
+}
+
 module.exports.humanlike = class HumanLike {
 	static checkChallenge() {
 		let challenge = document.querySelector("*[href^=\"/i-am-not-a-bot\"]");

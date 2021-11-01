@@ -39,6 +39,24 @@ ipcMain.on("config-set", (event, key, value) => {
 	event.returnValue = true;
 });
 
+let localStorage = Object.create(null);
+function getLocalStorage(id) {
+	if (!localStorage[id]) {
+		localStorage[id] = Object.create(null);
+	}
+
+	return localStorage[id];
+}
+
+ipcMain.on("config-get-local", (event, key) => {
+	event.returnValue = getLocalStorage(event.processId)[key];
+});
+
+ipcMain.on("config-set-local", (event, key, value) => {
+	getLocalStorage(event.processId)[key] = value;
+	event.returnValue = true;
+});
+
 ipcMain.on("note", (event, msg) => {
 	console.log(`note: ${msg}`);
 });
