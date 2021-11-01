@@ -41,7 +41,7 @@
 	<body>
 		<div id="bar">
 			<span>Active:&nbsp;</span>
-			<button id="gameid" onclick="switchGame()">none</button>
+			<button id="gameid" onclick="switchGame(false)" oncontextmenu="switchGame(true); return false;">none</button>
 
 			<span>Auto-Attack:&nbsp;</span>
 			<input id="attackbtn" type="checkbox" checked="true" onchange="updateAttack()">
@@ -80,8 +80,8 @@
 
 			ipcRenderer.on("config-update", updateBar);
 
-			function switchGame() {
-				ipcRenderer.send("next-game");
+			function switchGame(b) {
+				ipcRenderer.send("next-game", b);
 			}
 
 			function updateAttack() {

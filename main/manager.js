@@ -49,10 +49,6 @@ module.exports.GameManager = class GameManager {
 		}
 
 		return this.devtools;
-
-		game.view.webContents.setDevToolsWebContents(this.devtools.webContents);
-		game.view.webContents.openDevTools({mode: "detach"});
-
 	}
 
 	openDevTools() {
@@ -150,8 +146,16 @@ module.exports.GameManager = class GameManager {
 		}
 	}
 
-	nextGame() {
-		this.activeGame = (this.activeGame + 1) % this.games.length;
+	nextGame(back) {
+		if (back) {
+			this.activeGame--;
+			if (this.activeGame === -1) {
+				this.activeGame = this.games.length - 1;
+			}
+		}
+		else {
+			this.activeGame = (this.activeGame + 1) % this.games.length;
+		}
 
 		this.manageViews();
 		this.setConfig("game", this.activeGame);

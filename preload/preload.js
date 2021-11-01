@@ -53,6 +53,11 @@ let i = 0;
 window.addEventListener("load", () => {
 	document.querySelector("html").classList.add("dark");
 
+	let btn = document.querySelector("button[style=\"z-index:999\"]");
+	if (btn) {
+		btn.remove();
+	}
+
 	if (i++ == 0) {
 		return; // rocket loader hack
 	}

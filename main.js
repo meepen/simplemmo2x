@@ -69,8 +69,8 @@ ipcMain.on("verification-info", async (event, what, images, chosen) => {
 	await verify.saveInDatabase(what, images[chosen]);
 });
 
-ipcMain.on("next-game", () => {
-	manager.nextGame();
+ipcMain.on("next-game", (ev, b) => {
+	manager.nextGame(b);
 });
 
 ipcMain.on("open-devtools", () => {
