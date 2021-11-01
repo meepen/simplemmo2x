@@ -21,7 +21,7 @@ module.exports.InventoryAction = class InventoryAction {
 
 		await wait(200 + Math.random() * 350);
 
-		let ev = humanlike.pressElement(upgrades[0]);
+		let ev = humanlike.pressElement(upgrades[0].querySelector("a"));
 
 		await wait(200 + Math.random() * 350);
 
@@ -62,11 +62,19 @@ module.exports.InventoryAction = class InventoryAction {
 
 	async run() {
 		if (location.search == "?order_col=items.stat1modifier&order=desc&page=1") {
-			await this.doEquip();
+			// if searching by stats, look only for equippable... lol
+			location.search = "?type%5B0%5D=weapon&type%5B1%5D=armour&type%5B4%5D=amulet&type%5B5%5D=shield&type%5B6%5D=boots&type%5B8%5D=helmet&type%5B10%5D=greaves&type%5B11%5D=special&order_col=items.stat1modifier&order=desc&page=1";
 		}
 		else if (location.search) {
 			let p = parse(location.search.substr(1));
-			if (p && p["type[]"] && p["type[]"].indexOf("collectable") !== -1) {
+			if (!p) {
+				return;
+			}
+
+			if (p && p.order_col === "items.stat1modifier" && p.order == "desc") {
+				await this.doEquip();
+			}
+			else if (p["type[]"] && p["type[]"].join() == "collectable") {
 				await this.startCollector();
 			}
 		}
