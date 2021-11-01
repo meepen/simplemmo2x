@@ -42,7 +42,7 @@ module.exports.Verification = class Verification {
 	}
 
 	async saveDatabase() {
-		await writeFile("verification_db.json", JSON.stringify(this.db, null, "\t"), "utf-8");
+		await writeFile(this.dbFile, JSON.stringify(this.db, null, "\t"), "utf-8");
 	}
 
 	async findInDatabase(images, name) {

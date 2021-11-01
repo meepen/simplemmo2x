@@ -65,11 +65,12 @@ module.exports.GameManager = class GameManager {
 
 			if (this.gameCount === 1) {
 				this.devtools = new BrowserWindow({
-					width, height
+					width, height,
+					autoHideMenuBar: true
 				});
 
 				game.view.webContents.setDevToolsWebContents(this.devtools.webContents);
-				game.view.webContents.openDevTools();
+				game.view.webContents.openDevTools({mode: "detach"});
 			}
 		}
 		
