@@ -26,6 +26,16 @@
 			#bar > * {
 				padding-left: 5px;
 			}
+
+			#devtool-container {
+				flex-shrink: 0;
+				flex: 1;
+
+				align-items: center;
+				display: flex;
+				justify-content: right;
+				margin-right: 5px;
+			}
 		</style>
 	</head>
 	<body>
@@ -39,6 +49,10 @@
 			<input id="stepbtn" type="checkbox" checked="true" onchange="updateStep()">
 			-->
 			<span id="status">Starting</span>
+
+			<span id="devtool-container">
+				<button id="devtool" onclick="openDevTools()">Open DevTools</button>
+			</span>
 		</div>
 
 		<script type="text/javascript">
@@ -76,6 +90,10 @@
 
 			function updateStep() {
 				config.set("autostep", step.checked);
+			}
+
+			function openDevTools() {
+				ipcRenderer.send("open-devtools");
 			}
 
 			updateBar();

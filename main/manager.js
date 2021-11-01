@@ -33,6 +33,36 @@ module.exports.GameManager = class GameManager {
 		return this.config[key];
 	}
 
+	getDevToolsWindow() {
+		if (!this.devtools) {
+			let currentTools = this.devtools = new BrowserWindow({
+				width: 400,
+				height: 600,
+				autoHideMenuBar: true
+			});
+
+			this.devtools.on("closed", () => {
+				if (this.devtools == currentTools) {
+					this.devtools = null;
+				}
+			});
+		}
+
+		return this.devtools;
+
+		game.view.webContents.setDevToolsWebContents(this.devtools.webContents);
+		game.view.webContents.openDevTools({mode: "detach"});
+
+	}
+
+	openDevTools() {
+		let tools = this.getDevToolsWindow();
+		let game = this.games[this.activeGame].view.webContents;
+
+		game.setDevToolsWebContents(tools.webContents);
+		game.openDevTools({mode: "detach"});
+	}
+
 	async init(width, height) {
 		this.mainWindow = new BrowserWindow({
 			width,
@@ -62,16 +92,6 @@ module.exports.GameManager = class GameManager {
 		for (let i = 0; i < this.gameCount; i++) {
 			let game = await this.createGame();
 			console.log("Created", i);
-
-			if (this.gameCount === 1) {
-				this.devtools = new BrowserWindow({
-					width, height,
-					autoHideMenuBar: true
-				});
-
-				game.view.webContents.setDevToolsWebContents(this.devtools.webContents);
-				game.view.webContents.openDevTools({mode: "detach"});
-			}
 		}
 		
 		// for some reason must be called after adding all views

@@ -73,6 +73,10 @@ ipcMain.on("next-game", () => {
 	manager.nextGame();
 });
 
+ipcMain.on("open-devtools", () => {
+	manager.openDevTools();
+});
+
 function createGame() {
 	manager.init(width, height);
 }

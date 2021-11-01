@@ -18,6 +18,19 @@ endpoints["^/quests/viewall"] = QuestViewAction;
 endpoints["^/quests/view/"] = QuestAction;
 
 function checkTimers() {
+	let nextBreak = storage.get("nextBreak");
+	if (!nextBreak) {
+		nextBreak = Date.now() + 60000 * 20 + Math.random() * 60000 * 15;
+		storage.set("nextBreak", nextBreak);
+	}
+
+	if (nextBreak <= Date.now()) {
+		setTimeout(() => {
+			location.reload();
+		}, 60000 * 5 + Math.random() * 60000 * 3);
+		return true;
+	}
+
 	let nextQuest = storage.get("nextQuest") || 0;
 	if (nextQuest <= Date.now()) {
 		location.pathname = "/quests/viewall";
