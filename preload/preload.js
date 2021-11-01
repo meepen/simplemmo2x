@@ -3,6 +3,8 @@ const { GatherAction } = require("./actions/gather");
 const { TravelAction } = require("./actions/travel");
 const { AttackAction } = require("./actions/attack");
 const { InventoryAction } = require("./actions/inventory");
+const { QuestViewAction } = require("./actions/questview");
+const { QuestAction } = require("./actions/quest");
 
 let endpoints = Object.create(null);
 
@@ -11,6 +13,8 @@ endpoints["^/crafting/material/gather"] = GatherAction;
 endpoints["^/npcs/attack"] = AttackAction;
 endpoints["^/i-am-not-a-bot"] = VerifyAction;
 endpoints["^/inventory/items"] = InventoryAction
+endpoints["^/quests/viewall"] = QuestViewAction;
+endpoints["^/quests/view/"] = QuestAction;
 
 let i = 0;
 window.addEventListener("load", () => {
