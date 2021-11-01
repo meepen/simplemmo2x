@@ -1,7 +1,8 @@
 const { app, ipcMain } = require("electron");
 const yargs = require("yargs");
-const { GameManager } = require("./manager");
-const { Verification } = require("./verification");
+const { GameManager } = require("./main/manager");
+const { Verification } = require("./main/verification");
+const config = require("./config.json");
 
 const argv = yargs
 	.command("amount", "Determines how many sub-windows to create for multi-account", {
@@ -19,8 +20,8 @@ const argv = yargs
 		}
 	}).argv
 
-const width = 400;
-const height = 640;
+const width = config.game.width;
+const height = config.game.height;
 
 let verify = new Verification();
 let manager = new GameManager({
@@ -28,6 +29,7 @@ let manager = new GameManager({
 	group: argv.group
 });
 
+// TODO: new class?
 ipcMain.on("config-get", (event, key) => {
 	event.returnValue = manager.getConfig(key);
 });
@@ -62,8 +64,4 @@ app.on("window-all-closed", () => {
 });
 
 app.on("ready", createGame);
-app.on("activate", () => {
-	if (main === null) {
-		createGame();
-	}
-})
+app.on("activate", createGame);

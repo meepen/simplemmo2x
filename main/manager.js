@@ -2,9 +2,14 @@ const { BrowserWindow, BrowserView } = require("electron");
 const { Game } = require("./game");
 
 const { watch } = require("fs/promises");
+const config = require("../config.json");
 
 const ui_height = 32;
-const inactive_height = 200;
+const inactive_height = config.game.inactive.height;
+
+if (!inactive_height) {
+	throw new Error("null inactive.height");
+}
 
 module.exports.GameManager = class GameManager {
 	constructor(opts) {
@@ -41,7 +46,7 @@ module.exports.GameManager = class GameManager {
 			this.mainWindow = null;
 		});
 
-		this.uiFile = "ui.html"
+		this.uiFile = "html/ui.html"
 		
 		this.uiView = new BrowserView({
 			webPreferences: {
@@ -57,6 +62,15 @@ module.exports.GameManager = class GameManager {
 		for (let i = 0; i < this.gameCount; i++) {
 			let game = await this.createGame();
 			console.log("Created", i);
+
+			if (this.gameCount === 1) {
+				this.devtools = new BrowserWindow({
+					width, height
+				});
+
+				game.view.webContents.setDevToolsWebContents(this.devtools.webContents);
+				game.view.webContents.openDevTools();
+			}
 		}
 		
 		// for some reason must be called after adding all views
@@ -137,7 +151,7 @@ module.exports.GameManager = class GameManager {
 		let watcher = watch(this.uiFile);
 
 		for await (const event of watcher) {
-			this.uiView.webContents.loadFile(event.filename);
+			this.uiView.webContents.loadFile(this.uiFile);
 		}
 	}
 };

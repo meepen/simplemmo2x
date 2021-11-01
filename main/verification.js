@@ -16,7 +16,7 @@ async function similar(i0, i1) {
 
 module.exports.Verification = class Verification {
 	constructor() {
-		this.dbFile = "verification_db.json";
+		this.dbFile = "data/verification.json";
 		this.readDB();
 		this.startRefresh();
 

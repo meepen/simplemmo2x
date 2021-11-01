@@ -1,0 +1,37 @@
+<!doctype html>
+
+<html>
+	<head>
+		<title>Test</title>
+	</head>
+
+	<body>
+		<img id="redraw" src="fullimage.png" style="width:100px; height:20px;">
+
+		<script>
+			let img = document.querySelector("img#redraw");
+			// test get full loaded image
+
+			(async () => {
+				if (!img.complete) {
+					await new Promise((res, rej) => {
+						img.addEventListener("load", res);
+						img.addEventListener("error", rej);
+					});
+				}
+
+				let canvas = document.createElement("canvas");
+
+				canvas.width = img.naturalWidth;
+				canvas.height = img.naturalHeight;
+
+				let ctx = canvas.getContext("2d");
+
+				ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+				console.log(canvas.toDataURL().substr("data:image/png;base64,".length));
+			})();
+
+		</script>
+	</body>
+</html>

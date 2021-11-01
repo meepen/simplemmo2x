@@ -1,8 +1,13 @@
 const { BrowserView, session, app } = require("electron");
 const { join } = require("path");
 
-const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0";
+const config = require("../config.json");
 
+const userAgent = config.browser.userAgent;
+
+if (!userAgent) {
+	throw new Error("No user agent in config");
+}
 
 module.exports.Game = class Game {
 	constructor(id, group) {
@@ -18,12 +23,12 @@ module.exports.Game = class Game {
 		this.view = new BrowserView({
 			webPreferences: {
 				session: this.createSession(),
-				sandbox: true,
 				contextIsolation: true,
-				preload: join(app.getAppPath(), "preload.js")
+				preload: join(app.getAppPath(), "preload/preload.js")
 			},
 		});
 
+		this.view.webContents.backgroundThrottling = false;
 		this.view.webContents.setAudioMuted(true);
 		this.view.webContents.setWindowOpenHandler(details => {
 			this.view.webContents.loadURL(details.url);
@@ -39,7 +44,7 @@ module.exports.Game = class Game {
 	}
 
 	createSession() {
-		let gameSession = session.fromPartition("persist:simplemmo2x" + this.sessionGroup + (this.id || ""));
+		let gameSession = session.fromPartition("persist:simplemmo2x_" + this.sessionGroup + (this.id || ""));
 		gameSession.setPermissionRequestHandler((webContents, permission, callback) => {
 			return callback(false);
 		});

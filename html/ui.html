@@ -35,6 +35,9 @@
 
 			<span>Auto-Attack:&nbsp;</span>
 			<input id="attackbtn" type="checkbox" checked="true" onchange="updateAttack()">
+			<!-- <span>Auto-Step:&nbsp;</span>
+			<input id="stepbtn" type="checkbox" checked="true" onchange="updateStep()">
+			-->
 			<span id="status">Starting</span>
 		</div>
 
@@ -52,11 +55,13 @@
 			let statusText = document.querySelector("#status");
 			let gameId = document.querySelector("#gameid");
 			let attack = document.querySelector("#attackbtn");
+			// let step = document.querySelector("#stepbtn");
 
 			function updateBar(e, key, value) {
 				gameId.textContent = (config.get("game") || 0) + 1
 				statusText.textContent = `Steps: ${config.get("steps") || 0}`;
 				attack.checked = config.get("attack");
+				// step.checked = config.get("autostep");
 			}
 
 			ipcRenderer.on("config-update", updateBar);
@@ -67,6 +72,10 @@
 
 			function updateAttack() {
 				config.set("attack", attack.checked);
+			}
+
+			function updateStep() {
+				config.set("autostep", step.checked);
 			}
 
 			updateBar();
