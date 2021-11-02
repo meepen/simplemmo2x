@@ -1,6 +1,5 @@
-const { writeFile, readFile } = require("fs/promises");
-const { readFileSync } = require("fs");
-const { watch } = require("fs/promises");
+const { writeFile } = require("fs/promises");
+const { readFileSync, watchFile, unwatchFile } = require("fs");
 
 const Jimp = require("jimp");
 
@@ -21,13 +20,16 @@ module.exports.Verification = class Verification {
 		this.startRefresh();
 
 	}
-	
-	async startRefresh() {
-		let watcher = watch(this.dbFile);
 
-		for await (const event of watcher) {
+	watchFileCallback(curr, prev) {
+		if (curr.mtimeMs !== prev.mtimeMs) {
 			this.readDB();
 		}
+	}
+	
+	startRefresh() {
+		this.callback = (curr, prev) => { this.watchFileCallback(curr, prev); }
+		watchFile(this.dbFile, { persistent: false }, this.callback);
 	}
 
 	readDB() {

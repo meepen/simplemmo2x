@@ -99,7 +99,7 @@ module.exports.GameManager = class GameManager {
 	}
 
 	manageViews() {
-		let { width, height } = this.mainWindow.getBounds();
+		let { width, height } = this.mainWindow.getContentBounds();
 
 		this.uiView.setBounds({
 			x: 0,

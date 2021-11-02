@@ -19,22 +19,22 @@ endpoints["^/quests/view/"] = QuestAction;
 
 function checkTimers() {
 	let nextBreak = storage.get("nextBreak");
-	if (!nextBreak) {
-		nextBreak = Date.now() + 60000 * 20 + Math.random() * 60000 * 15;
-		storage.set("nextBreak", nextBreak);
-	}
 
-	if (nextBreak <= Date.now()) {
-		setTimeout(() => {
-			location.reload();
-		}, 60000 * 5 + Math.random() * 60000 * 3);
-		return true;
+	if (!nextBreak || nextBreak <= Date.now()) {
+		storage.set("nextBreak", Date.now() + 60000 * 30 + Math.random() * 60000 * 15);
+		
+		if (nextBreak) {
+			setTimeout(() => {
+				location.reload();
+			}, 60000 * 15 + Math.random() * 60000 * 5);
+			return true;
+		}
 	}
 
 	let nextQuest = storage.get("nextQuest") || 0;
 	if (nextQuest <= Date.now()) {
 		location.pathname = "/quests/viewall";
-		storage.set("nextQuest", Date.now() + 60000 * 5 + Math.random() * 60000 * 10);
+		storage.set("nextQuest", Date.now() + 60000 * 12 + Math.random() * 60000 * 4);
 		return true;
 	}
 
@@ -53,9 +53,17 @@ let i = 0;
 window.addEventListener("load", () => {
 	document.querySelector("html").classList.add("dark");
 
+	// cleaning up the noise
+
 	let btn = document.querySelector("button[style=\"z-index:999\"]");
 	if (btn) {
 		btn.remove();
+	}
+
+	let first = document.querySelector("main").firstElementChild;
+	
+	if (!first.classList.contains("web-app-container")) {
+		first.remove();
 	}
 
 	if (i++ == 0) {
