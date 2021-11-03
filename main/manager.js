@@ -51,6 +51,10 @@ module.exports.GameManager = class GameManager {
 		return this.devtools;
 	}
 
+	getActiveView() {
+		return this.games[this.activeGame].view;
+	}
+
 	openDevTools() {
 		let tools = this.getDevToolsWindow();
 		let game = this.games[this.activeGame].view.webContents;

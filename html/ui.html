@@ -36,6 +36,7 @@
 				justify-content: right;
 				margin-right: 5px;
 			}
+
 		</style>
 	</head>
 	<body>
@@ -51,6 +52,8 @@
 			<span id="status">Starting</span>
 
 			<span id="devtool-container">
+				<button onclick="goBack()">Back</button>
+				<button onclick="doReload()">Reload</button>
 				<button id="devtool" onclick="openDevTools()">Open DevTools</button>
 			</span>
 		</div>
@@ -94,6 +97,14 @@
 
 			function openDevTools() {
 				ipcRenderer.send("open-devtools");
+			}
+
+			function goBack() {
+				ipcRenderer.send("go-back");
+			}
+
+			function doReload() {
+				ipcRenderer.send("reload");
 			}
 
 			updateBar();

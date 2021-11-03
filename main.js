@@ -77,6 +77,14 @@ ipcMain.on("open-devtools", () => {
 	manager.openDevTools();
 });
 
+ipcMain.on("go-back", ev => {
+	manager.getActiveView().webContents.goBack();
+});
+
+ipcMain.on("reload", ev => {
+	manager.getActiveView().webContents.loadURL("https://web.simple-mmo.com/login");
+});
+
 function createGame() {
 	manager.init(width, height);
 }
