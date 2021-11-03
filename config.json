@@ -4,9 +4,10 @@
 	},
 	"game": {
 		"inactive": {
-			"height": 200
+			"height": 140,
+			"min_width": 300
 		},
-		"width": 400,
-		"height": 600
+		"width": 600,
+		"height": 800
 	}
 }

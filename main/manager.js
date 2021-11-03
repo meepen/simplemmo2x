@@ -6,6 +6,7 @@ const config = require("../config.json");
 
 const ui_height = 32;
 const inactive_height = config.game.inactive.height;
+const min_width = config.game.inactive.min_width || -Infinity;
 
 if (!inactive_height) {
 	throw new Error("null inactive.height");
@@ -76,6 +77,10 @@ module.exports.GameManager = class GameManager {
 			this.mainWindow = null;
 		});
 
+		this.mainWindow.on("resize", () => {
+			this.manageViews();
+		});
+
 		this.uiFile = "html/ui.html"
 		
 		this.uiView = new BrowserView({
@@ -117,37 +122,51 @@ module.exports.GameManager = class GameManager {
 			height: false
 		});
 
-		let x = 0;
-		let w = Math.floor(width / (this.games.length - 1));
 
 		let inactiveHeight = this.games.length === 1 ? 0 : inactive_height;
+		let perRow = Math.ceil(width / min_width);
+		if (perRow > this.games.length - 1) {
+			perRow = this.games.length - 1;
+		}
+		let w = Math.floor(width / perRow);
+		let x = 0;
+		let y = ui_height;
+		let rows = 0;
+
 
 		for (let { view, id } of this.games) {
-			if (id === this.activeGame) {
+			if (id !== this.activeGame) {
+				if (x == perRow) {
+					x = 0;
+					y += inactiveHeight;
+					rows++;
+					w = Math.floor(width / Math.min(this.games.length - 1 - perRow * rows, perRow));
+				}
+
 				view.setBounds({
-					x: 0,
-					y: ui_height + inactiveHeight,
-					width: width,
-					height: height - ui_height - inactiveHeight
-				});
-				view.setAutoResize({
-					width: true,
-					height: true
-				});
-			}
-			else {
-				view.setBounds({
-					x: x,
-					y: ui_height,
+					x: x++ * w,
+					y: y,
 					height: inactiveHeight,
 					width: w
 				});
 				view.setAutoResize({
 					horizontal: true
 				});
-				x += w;
 			}
 		}
+
+		let mainView = this.games[this.activeGame].view;
+		
+		mainView.setBounds({
+			x: 0,
+			y: y + inactiveHeight,
+			width: width,
+			height: height - y - inactiveHeight
+		});
+		mainView.setAutoResize({
+			width: true,
+			height: true
+		});
 	}
 
 	nextGame(back) {
