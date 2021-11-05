@@ -26,7 +26,7 @@ function checkTimers() {
 		if (nextBreak) {
 			setTimeout(() => {
 				location.reload();
-			}, 60000 * 15 + Math.random() * 60000 * 5);
+			}, 60000 * 5 + Math.random() * 60000 * 3);
 			return true;
 		}
 	}

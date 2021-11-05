@@ -17,9 +17,9 @@ module.exports.TravelAction = class TravelAction {
 	}
 
 	async run() {
-		await wait(2000 + Math.random() * 2000);
+		await wait(500 + Math.random() * 500);
 		while (1) {
-			await wait(250 + Math.random() * 3000);
+			await wait(250 + Math.random() * 1000);
 
 			let interaction = document.querySelector(".travel-text a.font-medium");
 
@@ -57,12 +57,12 @@ module.exports.TravelAction = class TravelAction {
 			}
 
 			while (this.travelCooldown.style[0] !== "display") {
-				await wait(200 + Math.random() * 250);
+				await wait(200 + Math.random() * 150);
 			}
 
 			let ev = humanlike.pressElement(this.stepButton);
 
-			await wait(200 + Math.random() * 360);
+			await wait(200 + Math.random() * 160);
 
 			ev.finish();
 			config.set("steps", (config.get("steps") || 0) + 1);
